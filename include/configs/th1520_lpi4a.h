@@ -26,6 +26,8 @@
 	"scriptaddr=0x8e400000\0" \
 	"scriptfile=uEnv_light_lpi4a.txt\0" \
 	"devtype=mmc\0" \
+	"serverip=192.168.8.50\0" \
+	"ipaddr=192.168.8.45\0" \
 	"devnum=0\0" \
 	"bootpart=2\0" \
 	"bootcmd=ext4load mmc ${devnum}:${bootpart} ${scriptaddr} ${scriptfile}; env import -t ${scriptaddr} ${filesize};boot\0" \
