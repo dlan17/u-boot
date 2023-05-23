@@ -144,6 +144,8 @@
 #define CSR_INSTRETH		0xc82
 #define CSR_MHARTID		0xf14
 
+#define sync_is()   asm volatile (".long 0x01b0000b")
+
 #ifndef __ASSEMBLY__
 
 #define csr_swap(csr, val)					\
