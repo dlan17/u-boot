@@ -5,8 +5,6 @@
 
 #include <linux/sizes.h>
 
-#define CFG_SYS_SDRAM_BASE		0x80000000
-
 #define UART_BASE	0x7040000000
 #define UART_REG_WIDTH  32
 
