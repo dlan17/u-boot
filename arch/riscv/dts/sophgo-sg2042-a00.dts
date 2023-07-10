@@ -47,6 +47,21 @@
 		reg = <0x0 0x0 0x4 0x00000000>;
 	};
 
+	memory@1 {
+		device_type = "memory";
+		reg = <0x0 0x1 0x0 0x0>;
+	};
+
+	memory@2 {
+		device_type = "memory";
+		reg = <0x0 0x2 0x0 0x0>;
+	};
+
+	memory@3 {
+		device_type = "memory";
+		reg = <0x0 0x3 0x0 0x0>;
+	};
+
 	clocks {
 		clk0: osc {
 			compatible = "fixed-clock";
