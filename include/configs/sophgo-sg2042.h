@@ -25,8 +25,8 @@
 	"kernel_comp_addr_r=0x88000000\0" \
 	"kernel_comp_size=0x4000000\0" \
 	"ramdisk_addr_r=0x8d300000\0" \
-	"fdt_addr_r=0x8e000000\0" \
-	"scriptaddr=0x8e400000\0" \
+	"fdt_addr_r=0xa0000000\0" \
+	"scriptaddr=0xa0400000\0" \
 	"devtype=mmc\0" \
 	"devnum=0\0" \
 	"bootcmd=run scan_dev_for_boot_part\0" \
