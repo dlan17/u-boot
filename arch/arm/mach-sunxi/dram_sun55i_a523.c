@@ -1439,31 +1439,88 @@ static void mctl_auto_detect_rank_width(const struct dram_para *para,
 	panic("This DRAM setup is currently not supported.\n");
 }
 
+static void mctl_write_pattern(void)
+{
+	unsigned int i;
+	u32 *ptr, val;
+
+	ptr = (u32 *)CFG_SYS_SDRAM_BASE;
+	for (i = 0; i < 16; ptr++, i++) {
+		if (i & 1)
+			val = ~(ulong)ptr;
+		else
+			val = (ulong)ptr;
+		writel(val, ptr);
+	}
+}
+
+static bool mctl_check_pattern(ulong offset)
+{
+	unsigned int i;
+	u32 *ptr, val;
+
+	ptr = (u32 *)CFG_SYS_SDRAM_BASE;
+	for (i = 0; i < 16; ptr++, i++) {
+		if (i & 1)
+			val = ~(ulong)ptr;
+		else
+			val = (ulong)ptr;
+		if (val != *(ptr + offset / 4))
+			return false;
+	}
+
+	return true;
+}
+
 static void mctl_auto_detect_dram_size(const struct dram_para *para,
 				       struct dram_config *config)
 {
+	unsigned int cols, rows;
+	u32 buffer[16];
+
 	/* detect row address bits */
 	config->cols = 8;
 	config->rows = 16;
 	mctl_core_init(para, config);
 
-	for (config->rows = 13; config->rows < 16; config->rows++) {
+	/*
+	 * Store content so it can be restored later. This is important
+	 * if controller was already initialized and holds any data
+	 * which is important for restoring system.
+	 */
+	memcpy(buffer, (u32 *)CFG_SYS_SDRAM_BASE, sizeof(buffer));
+
+	for (rows = 13; rows < 16; rows++) {
 		/* 8 banks, 8 bit per byte and 16/32 bit width */
-		if (mctl_mem_matches((1 << (config->rows + config->cols +
+		if (mctl_check_pattern((1 << (rows + config->cols +
 					    4 + config->bus_full_width))))
 			break;
 	}
+
+	/* restore data */
+	memcpy((u32 *)CFG_SYS_SDRAM_BASE, buffer, sizeof(buffer));
 
 	/* detect column address bits */
 	config->cols = 11;
 	mctl_core_init(para, config);
 
-	for (config->cols = 8; config->cols < 11; config->cols++) {
+	/* store data again as it might be moved */
+	memcpy(buffer, (u32 *)CFG_SYS_SDRAM_BASE, sizeof(buffer));
+
+	mctl_write_pattern();
+
+	for (cols = 8; cols < 11; cols++) {
 		/* 8 bits per byte and 16/32 bit width */
-		if (mctl_mem_matches(1 << (config->cols + 1 +
+		if (mctl_check_pattern(1 << (cols + 1 +
 					   config->bus_full_width)))
 			break;
 	}
+
+	/* restore data */
+	memcpy((u32 *)CFG_SYS_SDRAM_BASE, buffer, sizeof(buffer));
+
+	config->cols = cols;
+	config->rows = rows;
 }
 
 static unsigned long long mctl_calc_size(const struct dram_config *config)
