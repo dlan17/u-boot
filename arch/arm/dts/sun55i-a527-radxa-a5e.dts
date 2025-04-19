@@ -308,3 +308,23 @@
 	vqmmc-supply = <&reg_cldo1>;
 	status = "okay";
 };
+
+&emac {
+	pinctrl-names = "default";
+	pinctrl-0 = <&emac0_pins>;
+	phy-mode = "rgmii-id";
+	phy-handle = <&ext_rgmii_phy>;
+	phy-supply = <&reg_cldo3>;
+
+	allwinner,tx-delay-ps =  < 300 >;
+	allwinner,rx-delay-ps =  < 400 >;
+
+	status = "okay";
+};
+
+&mdio {
+	ext_rgmii_phy: ethernet-phy@1 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <1>;
+	};
+};
