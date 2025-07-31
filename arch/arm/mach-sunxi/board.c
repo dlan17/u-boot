@@ -292,6 +292,9 @@ uint32_t sunxi_get_boot_device(void)
 {
 	int boot_source = sunxi_get_boot_source();
 
+#ifdef CONFIG_MACH_SUN60I_A733
+	return BOOT_DEVICE_RAM;
+#endif
 	/*
 	 * When booting from the SD card or NAND memory, the "eGON.BT0"
 	 * signature is expected to be found in memory at the address 0x0004
