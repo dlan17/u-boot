@@ -1,0 +1,118 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+
+#include <clk-uclass.h>
+#include <dm.h>
+#include <errno.h>
+#include <clk/sunxi.h>
+#include <linux/bitops.h>
+
+#include <dt-bindings/clock/sun60i-a733-ccu.h>
+#include <dt-bindings/reset/sun60i-a733-ccu.h>
+
+#define MBUS_GE_REG 0x5e4
+
+#define SMHC0_CLK_REG 0xd00
+#define SMHC0_BGR_REG 0xd0c
+#define SMHC1_CLK_REG 0xd10
+#define SMHC1_BGR_REG 0xd1c
+#define SMHC2_CLK_REG 0xd20
+#define SMHC2_BGR_REG 0xd2c
+
+#define UART0_BGR_REG 0xe00
+#define UART1_BGR_REG 0xe04
+#define UART2_BGR_REG 0xe08
+#define UART3_BGR_REG 0xe0c
+#define UART4_BGR_REG 0xe10
+#define UART5_BGR_REG 0xe14
+
+#define SPI0_CLK_REG		0x0f00
+#define SPI0_BGR_REG		0x0f04
+#define SPI1_CLK_REG		0x0f08
+#define SPI1_BGR_REG		0x0f0c
+#define SPI2_CLK_REG		0x0f10
+#define SPI2_BGR_REG		0x0f14
+
+#define USB0_CLK_REG		0x1300
+#define USB0_BGR_REG		0x1304
+#define USB1_CLK_REG		0x1308
+#define USB1_BGR_REG		0x130c
+#define USB0_USB1_REF_CLK_REG		0x1340
+
+#define GMAC_PTP_CLK_REG	0x1400
+#define GMAC0_PHY_CLK_REG	0x1410
+#define GMAC0_BGR_REG		0x141c
+
+static struct ccu_clk_gate a733_gates[] = {
+	[CLK_PLL_PERIPH0_200M]	= GATE_DUMMY,
+	[CLK_APB1]		= GATE_DUMMY,
+
+	[CLK_MBUS_GMAC0]	= GATE(MBUS_GE_REG, BIT(11)),
+
+	[CLK_BUS_MMC0]		= GATE(SMHC0_BGR_REG, BIT(0)),
+	[CLK_BUS_MMC1]		= GATE(SMHC1_BGR_REG, BIT(0)),
+	[CLK_BUS_MMC2]		= GATE(SMHC2_BGR_REG, BIT(0)),
+
+	[CLK_BUS_UART0]		= GATE(UART0_BGR_REG, BIT(0)),
+	[CLK_BUS_UART1]		= GATE(UART1_BGR_REG, BIT(0)),
+	[CLK_BUS_UART2]		= GATE(UART2_BGR_REG, BIT(0)),
+	[CLK_BUS_UART3]		= GATE(UART3_BGR_REG, BIT(0)),
+	[CLK_BUS_UART4]		= GATE(UART4_BGR_REG, BIT(0)),
+	[CLK_BUS_UART5]		= GATE(UART5_BGR_REG, BIT(0)),
+
+	[CLK_BUS_I2C0]		= GATE(0x91c, BIT(0)),
+	[CLK_BUS_I2C1]		= GATE(0x91c, BIT(1)),
+	[CLK_BUS_I2C2]		= GATE(0x91c, BIT(2)),
+	[CLK_BUS_I2C3]		= GATE(0x91c, BIT(3)),
+	[CLK_SPI0]			= GATE(SPI0_CLK_REG, BIT(31)),
+	[CLK_SPI1]			= GATE(SPI1_CLK_REG, BIT(31)),
+	[CLK_BUS_SPI0]		= GATE(SPI0_BGR_REG, BIT(0)),
+	[CLK_BUS_SPI1]		= GATE(SPI1_BGR_REG, BIT(0)),
+
+	[CLK_GMAC0_PHY]		= GATE(GMAC0_PHY_CLK_REG, BIT(31)),
+	[CLK_BUS_GMAC0]		= GATE(GMAC0_BGR_REG, BIT(0)),
+
+	[CLK_USB_OHCI0]		= GATE(USB0_CLK_REG, BIT(31)),
+	[CLK_USB_OHCI1]		= GATE(USB1_CLK_REG, BIT(31)),
+	[CLK_BUS_OHCI0]		= GATE(USB0_BGR_REG, BIT(0)),
+	[CLK_BUS_OHCI1]		= GATE(USB1_BGR_REG, BIT(0)),
+	[CLK_BUS_EHCI0]		= GATE(USB0_BGR_REG, BIT(4)),
+	[CLK_BUS_EHCI1]		= GATE(USB1_BGR_REG, BIT(4)),
+	[CLK_USB_GATE0]		= GATE(USB0_BGR_REG, BIT(8)),
+	[CLK_USB_GATE1]		= GATE(USB1_BGR_REG, BIT(8)),
+	[CLK_BUS_OTG]		= GATE(0xa8c, BIT(8)),
+};
+
+static struct ccu_reset a733_resets[] = {
+	[RST_BUS_MMC0]		= RESET(SMHC0_BGR_REG, BIT(16)),
+	[RST_BUS_MMC1]		= RESET(SMHC1_BGR_REG, BIT(16)),
+	[RST_BUS_MMC2]		= RESET(SMHC2_BGR_REG, BIT(16)),
+	[RST_BUS_UART0]		= RESET(UART0_BGR_REG, BIT(16)),
+	[RST_BUS_UART1]		= RESET(UART1_BGR_REG, BIT(16)),
+	[RST_BUS_UART2]		= RESET(UART2_BGR_REG, BIT(16)),
+	[RST_BUS_UART3]		= RESET(UART3_BGR_REG, BIT(16)),
+	[RST_BUS_UART4]		= RESET(UART4_BGR_REG, BIT(16)),
+	[RST_BUS_UART5]		= RESET(UART5_BGR_REG, BIT(16)),
+	[RST_BUS_I2C0]		= RESET(0x91c, BIT(16)),
+	[RST_BUS_I2C1]		= RESET(0x91c, BIT(17)),
+	[RST_BUS_I2C2]		= RESET(0x91c, BIT(18)),
+	[RST_BUS_I2C3]		= RESET(0x91c, BIT(19)),
+	[RST_BUS_SPI0]		= RESET(SPI0_BGR_REG, BIT(16)),
+	[RST_BUS_SPI1]		= RESET(SPI1_BGR_REG, BIT(16)),
+
+	[RST_BUS_GMAC0]		= RESET(GMAC0_BGR_REG, BIT(16) | BIT(17)),
+
+	[RST_USB_PHY0]		= RESET(USB0_CLK_REG, BIT(30)),
+	[RST_USB_PHY1]		= RESET(USB1_CLK_REG, BIT(30)),
+	[RST_BUS_OHCI0]		= RESET(USB0_BGR_REG, BIT(16)),
+	[RST_BUS_OHCI1]		= RESET(USB1_BGR_REG, BIT(16)),
+	[RST_BUS_EHCI0]		= RESET(USB0_BGR_REG, BIT(20)),
+	[RST_BUS_EHCI1]		= RESET(USB1_BGR_REG, BIT(20)),
+	[RST_BUS_OTG]		= RESET(0xa8c, BIT(24)),
+};
+
+const struct ccu_desc a733_ccu_desc = {
+	.gates	= a733_gates,
+	.resets	= a733_resets,
+	.num_gates = ARRAY_SIZE(a733_gates),
+	.num_resets = ARRAY_SIZE(a733_resets),
+};
