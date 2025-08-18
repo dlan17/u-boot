@@ -19,12 +19,18 @@
 #elif defined(CONFIG_SUN50I_GEN_H6)
 #define SUNXI_PIO_BASE		0x0300b000
 #define SUNXI_R_PIO_BASE	0x07022000
-#elif defined(CONFIG_SUNXI_GEN_NCAT2)
+#elif defined(CONFIG_SUNXI_GEN_NCAT2) || defined(CONFIG_SUNXI_NEW2_PINCTRL)
 #define SUNXI_PIO_BASE		0x02000000
 #define SUNXI_R_PIO_BASE	0x07022000
 #else
 #define SUNXI_PIO_BASE		0x01c20800
 #define SUNXI_R_PIO_BASE	0x01f02c00
+#endif
+
+#if CONFIG_SUNXI_NEW2_PINCTRL
+#define SUNXI_PIO_OFFSET	0x80 /* virtual offset for PA */
+#else
+#define SUNXI_PIO_OFFSET	0x00
 #endif
 
 /*
@@ -171,6 +177,9 @@ enum sunxi_gpio_number {
 
 #ifdef CONFIG_SUNXI_NEW_PINCTRL
 	#define SUNXI_PINCTRL_BANK_SIZE	0x30
+	#define SUNXI_GPIO_DISABLE	0xf
+#elif CONFIG_SUNXI_NEW2_PINCTRL
+	#define SUNXI_PINCTRL_BANK_SIZE	0x80
 	#define SUNXI_GPIO_DISABLE	0xf
 #else
 	#define SUNXI_PINCTRL_BANK_SIZE	0x24

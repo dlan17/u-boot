@@ -556,6 +556,7 @@ config MACH_SUN55I_A523
 config MACH_SUN60I_A733
 	bool "sun60i (Allwinner A733)"
 	select ARM64
+	select SUNXI_NEW2_PINCTRL
 	select FIT
 	select SPL_LOAD_FIT if SPL
 	select SUPPORT_SPL

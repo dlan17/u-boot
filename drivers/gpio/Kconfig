@@ -426,6 +426,13 @@ config SUNXI_NEW_PINCTRL
 	The Allwinner D1 and other new SoCs use a different register map
 	for the GPIO block, which we need to know about in the SPL.
 
+config SUNXI_NEW2_PINCTRL
+	bool
+	depends on SUNXI_GPIO
+	---help---
+	The Allwinner A733 SoCs use a different register map
+	for the GPIO block, which we need to know about in the SPL.
+
 config XILINX_GPIO
 	bool "Xilinx GPIO driver"
 	depends on DM_GPIO
