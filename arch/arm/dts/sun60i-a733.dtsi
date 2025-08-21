@@ -178,6 +178,14 @@
 				drive-strength = <30>;
 				bias-pull-up;
 			};
+
+			spi0_pins: spi0-pins {
+				pins = "PC2", "PC3" ,"PC4", "PC12";
+				allwinner,pinmux = <5>;
+				function = "spi0";
+				drive-strength = <30>;
+				bias-pull-up;
+			};
 		};
 
 		ccu: clock-controller@2002000 {
@@ -527,6 +535,21 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 			interrupts = <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		spi0: spi@2540000 {
+			compatible = "allwinner,sun8i-h3-spi";
+			reg = <0x02540000 0x1000>;
+			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ccu CLK_BUS_SPI0>, <&ccu CLK_SPI0>;
+			clock-names = "ahb", "mod";
+			pinctrl-names = "default";
+			pinctrl-0 = <&spi0_pins>;
+			resets = <&ccu RST_BUS_SPI0>;
+			status = "disabled";
+			num-cs = <1>;
+			#address-cells = <1>;
+			#size-cells = <0>;
 		};
 
 		r_pio: pinctrl@7025000 {
