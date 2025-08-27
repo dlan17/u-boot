@@ -215,6 +215,7 @@ config SUNXI_SRAM_ADDRESS
 	hex
 	default 0x10000 if MACH_SUN9I || MACH_SUN50I || MACH_SUN50I_H5
 	default 0x44000 if MACH_SUN55I_A523
+	default 0x47000 if MACH_SUN60I_A733
 	default 0x20000 if SUN50I_GEN_H6 || SUNXI_GEN_NCAT2
 	default 0x0
 	---help---
@@ -228,6 +229,7 @@ config SUNXI_RVBAR_ADDRESS
 	depends on ARM64
 	default 0x08100040 if MACH_SUN50I_A133
 	default 0x08000040 if MACH_SUN55I_A523
+	default 0x08001004 if MACH_SUN60I_A733
 	default 0x09010040 if SUN50I_GEN_H6
 	default 0x017000a0
 	---help---
@@ -550,6 +552,13 @@ config MACH_SUN55I_A523
 	select SPL_LOAD_FIT if SPL
 	imply OF_UPSTREAM
 
+config MACH_SUN60I_A733
+	bool "sun60i (Allwinner A733)"
+	select ARM64
+	select FIT
+	select SPL_LOAD_FIT if SPL
+	select SUPPORT_SPL
+
 endchoice
 
 # The sun8i SoCs share a lot, this helps to avoid a lot of "if A23 || A33"
@@ -867,6 +876,7 @@ config SYS_CONFIG_NAME
 	default "sun50i" if MACH_SUN50I_H616
 	default "sun50i" if MACH_SUN50I_A133
 	default "sun55i" if MACH_SUN55I_A523
+	default "sun60i" if MACH_SUN60I_A733
 
 config SYS_BOARD
 	default "sunxi"
@@ -1183,6 +1193,7 @@ config SPL_STACK_R_ADDR
 	default 0x4fe00000 if MACH_SUN50I
 	default 0x4fe00000 if SUN50I_GEN_H6
 	default 0x4fe00000 if SUNXI_GEN_NCAT2
+	default 0x4fe00000 if MACH_SUN60I_A733
 
 config SPL_SPI_SUNXI
 	bool "Support for SPI Flash on Allwinner SoCs in SPL"
