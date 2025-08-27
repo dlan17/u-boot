@@ -112,6 +112,9 @@ static int mmc_set_mod_clk(struct sunxi_mmc_priv *priv, unsigned int hz)
 			if (priv->mmc_no == 2)
 				pll_hz *= 2;
 		}
+
+		if (IS_ENABLED(CONFIG_MACH_SUN60I_A733))
+			pll_hz /= 3;
 	}
 
 	div = pll_hz / hz;
@@ -167,7 +170,8 @@ static int mmc_set_mod_clk(struct sunxi_mmc_priv *priv, unsigned int hz)
 	}
 
 	/* The A523 has a second divider, not a shift. */
-	if (IS_ENABLED(CONFIG_MACH_SUN55I_A523))
+	if (IS_ENABLED(CONFIG_MACH_SUN55I_A523) ||
+	    IS_ENABLED(CONFIG_MACH_SUN60I_A733))
 		n = (1U << n) - 1;
 
 	writel(CCM_MMC_CTRL_ENABLE| pll | CCM_MMC_CTRL_N(n) |
@@ -661,15 +665,25 @@ static const struct dm_mmc_ops sunxi_mmc_ops = {
 	.get_cd		= sunxi_mmc_getcd,
 };
 
-static unsigned get_mclk_offset(void)
+static unsigned int get_mclk_offset(int mmc_no)
 {
+	unsigned int size, offset;
+
 	if (IS_ENABLED(CONFIG_MACH_SUN9I_A80))
-		return 0x410;
+		offset = 0x410;
+	else if (IS_ENABLED(CONFIG_MACH_SUN60I_A733))
+		offset = 0xd00;
+	else if (IS_ENABLED(CONFIG_SUN50I_GEN_H6) || IS_ENABLED(CONFIG_SUNXI_GEN_NCAT2))
+		offset = 0x830;
+	else
+		offset = 0x88;
 
-	if (IS_ENABLED(CONFIG_SUN50I_GEN_H6) || IS_ENABLED(CONFIG_SUNXI_GEN_NCAT2))
-		return 0x830;
+	if (IS_ENABLED(CONFIG_MACH_SUN60I_A733))
+		size = 0x10;
+	else
+		size = 0x4;
 
-	return 0x88;
+	return offset + size * mmc_no;
 };
 
 static int sunxi_mmc_probe(struct udevice *dev)
@@ -707,7 +721,7 @@ static int sunxi_mmc_probe(struct udevice *dev)
 	ccu_reg = (u32 *)(uintptr_t)ofnode_get_addr(args.node);
 
 	priv->mmc_no = ((uintptr_t)priv->reg - SUNXI_MMC0_BASE) / 0x1000;
-	priv->mclkreg = (void *)ccu_reg + get_mclk_offset() + priv->mmc_no * 4;
+	priv->mclkreg = (void *)ccu_reg + get_mclk_offset(priv->mmc_no);
 
 	ret = clk_get_by_name(dev, "ahb", &gate_clk);
 	if (!ret)
