@@ -522,13 +522,16 @@ void reset_cpu(void)
 	/* WDOG is broken for some H6 rev. use the R_WDOG instead */
 	static const struct sunxi_wdog *wdog =
 		(struct sunxi_wdog *)SUNXI_R_WDOG_BASE;
+#elif defined(CONFIG_MACH_SUN60I_A733)
+	static const struct sunxi_wdog *wdog =
+		(struct sunxi_wdog *)SUNXI_WDT_BASE;
 #else
 	static const struct sunxi_wdog *wdog =
 		((struct sunxi_timer_reg *)SUNXI_TIMER_BASE)->wdog;
 #endif
 	/* Set the watchdog for its shortest interval (.5s) and wait */
-	writel(WDT_CFG_RESET, &wdog->cfg);
-	writel(WDT_MODE_EN, &wdog->mode);
+	writel(WDT_CFG_KEY | WDT_CFG_RESET, &wdog->cfg);
+	writel(WDT_CFG_KEY | WDT_MODE_EN, &wdog->mode);
 	writel(WDT_CTRL_KEY | WDT_CTRL_RESTART, &wdog->ctl);
 	while (1) { }
 #endif

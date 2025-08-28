@@ -11,6 +11,7 @@
 
 #define WDT_CTRL_RESTART	(0x1 << 0)
 #define WDT_CTRL_KEY		(0x0a57 << 1)
+#define WDT_CFG_KEY			(0x16aa << 16)
 
 #define WDT_SRST_REG		0x08
 
@@ -35,14 +36,17 @@ struct sunxi_wdog {
 
 struct sunxi_wdog {
 	u32 irq_en;		/* 0x00 */
-	u32 irq_sta;		/* 0x04 */
+	u32 irq_sta;	/* 0x04 */
+#if defined(CONFIG_MACH_SUN60I_A733)
+	u32 srst;		/* 0x08 */
+#else
 	u32 res1[2];
+#endif
 	u32 ctl;		/* 0x10 */
 	u32 cfg;		/* 0x14 */
 	u32 mode;		/* 0x18 */
 	u32 res2;
 };
-
 #endif
 
 #endif /* _SUNXI_WATCHDOG_H_ */
