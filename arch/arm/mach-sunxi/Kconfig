@@ -215,6 +215,7 @@ config SUNXI_SRAM_ADDRESS
 	hex
 	default 0x10000 if MACH_SUN9I || MACH_SUN50I || MACH_SUN50I_H5
 	default 0x44000 if MACH_SUN55I_A523
+	default 0x47000 if MACH_SUN60I_A733
 	default 0x20000 if SUN50I_GEN_H6 || SUNXI_GEN_NCAT2
 	default 0x0
 	---help---
@@ -228,6 +229,7 @@ config SUNXI_RVBAR_ADDRESS
 	depends on ARM64
 	default 0x08100040 if MACH_SUN50I_A133
 	default 0x08000040 if MACH_SUN55I_A523
+	default 0x08001004 if MACH_SUN60I_A733
 	default 0x09010040 if SUN50I_GEN_H6
 	default 0x017000a0
 	---help---
@@ -257,6 +259,7 @@ config SUNXI_BL31_BASE
 	default 0x40000000 if MACH_SUN50I_H616
 	default 0x00104000 if SUN50I_GEN_H6
 	default 0x00054000 if MACH_SUN55I_A523
+	default 0x00062000 if MACH_SUN60I_A733
 	default 0x0
 	help
 	  Address where BL31 (TF-A) is loaded, or zero if BL31 is not used.
@@ -339,6 +342,7 @@ config MACH_SUNXI_H3_H5
 config SUNXI_DRAM_MAX_SIZE
 	hex
 	default 0x100000000 if MACH_SUN50I_H616 || MACH_SUN50I_A133 || MACH_SUN55I_A523
+	default 0x400000000 if MACH_SUN60I_A733
 	default 0xC0000000 if MACH_SUN50I || MACH_SUN50I_H5 || MACH_SUN50I_H6
 	default 0x80000000
 
@@ -552,6 +556,15 @@ config MACH_SUN55I_A523
 	select FIT
 	select SPL_LOAD_FIT if SPL
 	imply OF_UPSTREAM
+
+config MACH_SUN60I_A733
+	bool "sun60i (Allwinner A733)"
+	select ARM64
+	select SUNXI_GEN_NCAT2
+	select SUNXI_A733_PINCTRL
+	select FIT
+	select SPL_LOAD_FIT if SPL
+	select SUPPORT_SPL
 
 endchoice
 
@@ -870,6 +883,7 @@ config SYS_CONFIG_NAME
 	default "sun50i" if MACH_SUN50I_H616
 	default "sun50i" if MACH_SUN50I_A133
 	default "sun55i" if MACH_SUN55I_A523
+	default "sun60i" if MACH_SUN60I_A733
 
 config SYS_BOARD
 	default "sunxi"
