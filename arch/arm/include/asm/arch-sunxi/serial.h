@@ -17,7 +17,7 @@
 #elif defined(CONFIG_MACH_SUNIV)
 #define SUNXI_UART0_BASE		0x01c25000
 #define SUNXI_R_UART_BASE		0
-#elif defined(CONFIG_SUNXI_GEN_NCAT2)
+#elif defined(CONFIG_SUNXI_GEN_NCAT2) || defined(CONFIG_MACH_SUN60I_A733)
 #define SUNXI_UART0_BASE		0x02500000
 #define SUNXI_R_UART_BASE		0		// 0x07080000 (?>
 #else
