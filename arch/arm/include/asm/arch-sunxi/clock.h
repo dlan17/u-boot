@@ -19,6 +19,8 @@
 #include <asm/arch/clock_sun8i_a83t.h>
 #elif defined(CONFIG_SUN50I_GEN_H6) || defined(CONFIG_SUNXI_GEN_NCAT2)
 #include <asm/arch/clock_sun50i_h6.h>
+#elif defined(CONFIG_MACH_SUN60I_A733)
+#include <asm/arch/clock_sun60i_a733.h>
 #elif defined(CONFIG_MACH_SUN6I) || defined(CONFIG_MACH_SUN8I) || \
       defined(CONFIG_MACH_SUN50I) || defined(CONFIG_MACH_SUNIV)
 #include <asm/arch/clock_sun6i.h>
