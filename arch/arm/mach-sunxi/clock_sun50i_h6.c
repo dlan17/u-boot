@@ -16,6 +16,10 @@ void clock_init_safe(void)
 	void *const ccm = (void *)SUNXI_CCM_BASE;
 	void *const prcm = (void *)SUNXI_PRCM_BASE;
 
+	/* skip clock init for A733 for now */
+	if (IS_ENABLED(CONFIG_MACH_SUN60I_A733))
+		return;
+
 	if (IS_ENABLED(CONFIG_MACH_SUN50I_H616))
 		setbits_le32(prcm + CCU_PRCM_SYS_PWROFF_GATING, 0x10);
 	if (IS_ENABLED(CONFIG_MACH_SUN55I_A523))
@@ -82,14 +86,14 @@ void clock_init_uart(void)
 	writel(APB2_CLK_SRC_OSC24M|
 	       APB2_CLK_RATE_N_1|
 	       APB2_CLK_RATE_M(1),
-	       ccm + CCU_H6_APB2_CFG);
+	       ccm + CCU_UART_CLK_CFG);
 
 	/* open the clock for uart */
-	setbits_le32(ccm + CCU_H6_UART_GATE_RESET,
+	setbits_le32(ccm + CCU_UART_GATE_RESET,
 		     1 << (CONFIG_CONS_INDEX - 1));
 
 	/* deassert uart reset */
-	setbits_le32(ccm + CCU_H6_UART_GATE_RESET,
+	setbits_le32(ccm + CCU_UART_GATE_RESET,
 		     1 << (RESET_SHIFT + CONFIG_CONS_INDEX - 1));
 }
 
@@ -236,7 +240,7 @@ int clock_twi_onoff(int port, int state)
 unsigned int clock_get_pll6(void)
 {
 	void *const ccm = (void *)SUNXI_CCM_BASE;
-	uint32_t rval = readl(ccm + CCU_H6_PLL6_CFG);
+	u32 rval = readl(ccm + CCU_PLL6_CFG);
 	int n = ((rval & CCM_PLL6_CTRL_N_MASK) >> CCM_PLL6_CTRL_N_SHIFT) + 1;
 	int div2 = ((rval & CCM_PLL6_CTRL_DIV2_MASK) >>
 		    CCM_PLL6_CTRL_DIV2_SHIFT) + 1;
@@ -257,6 +261,8 @@ unsigned int clock_get_pll6(void)
 	 */
 	if (IS_ENABLED(CONFIG_MACH_SUN50I_H6))
 		m = 4;
+	else if (IS_ENABLED(CONFIG_MACH_SUN60I_A733))
+		m = 1;
 	else
 		m = 2;
 

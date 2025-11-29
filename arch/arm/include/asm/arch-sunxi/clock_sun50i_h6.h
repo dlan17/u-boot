@@ -36,6 +36,25 @@
 #define CCU_H6_UART_GATE_RESET		0x90c
 #define CCU_H6_I2C_GATE_RESET		0x91c
 
+/* A733 CCU register offsets */
+#define CCU_A733_PLL6_CFG		0x0a0
+#define CCU_A733_APB_UART_CLK_CFG	0x538
+#define CCU_A733_UART_GATE_RESET	0xe00
+
+#ifdef CONFIG_MACH_SUN60I_A733				/* A733 */
+
+#define CCU_PLL6_CFG			CCU_A733_PLL6_CFG
+#define CCU_UART_CLK_CFG		CCU_A733_APB_UART_CLK_CFG
+#define CCU_UART_GATE_RESET		CCU_A733_UART_GATE_RESET
+
+#else										/* H6 */
+
+#define CCU_PLL6_CFG			CCU_H6_PLL6_CFG
+#define CCU_UART_CLK_CFG		CCU_H6_APB2_CFG
+#define CCU_UART_GATE_RESET		CCU_H6_UART_GATE_RESET
+
+#endif
+
 /* A523 CPU PLL offsets */
 #define CPC_CPUA_PLL_CTRL		0x04
 #define CPC_DSU_PLL_CTRL		0x08
@@ -69,7 +88,11 @@
 #define CCM_PLL5_CTRL_DIV2(div0)	((div0) << 1)
 
 /* pll6 bit field */
+#ifdef CONFIG_MACH_SUN60I_A733
+#define CCM_PLL6_CTRL_P0_SHIFT		20
+#else
 #define CCM_PLL6_CTRL_P0_SHIFT		16
+#endif
 #define CCM_PLL6_CTRL_P0_MASK		(0x7 << CCM_PLL6_CTRL_P0_SHIFT)
 #define CCM_PLL6_CTRL_N_SHIFT		8
 #define CCM_PLL6_CTRL_N_MASK		(0xff << CCM_PLL6_CTRL_N_SHIFT)
@@ -119,6 +142,14 @@
 #define CCM_PSI_AHB1_AHB2_DEFAULT	0x03000002	    /* 200 MHz */
 #define CCM_APB1_DEFAULT		0x03000005	    /* APB0 really */
 #define CCM_APB2_DEFAULT		0x03000005	    /* APB1 really */
+
+#elif CONFIG_MACH_SUN60I_A733				/* A733 */
+
+#define CCM_PLL6_DEFAULT		0xee126310	    /* 1200/800/480 MHz */
+#define CCM_PSI_AHB1_AHB2_DEFAULT	0x03000002	    /* 200 MHz */
+#define CCM_APB1_DEFAULT		0x03000005	    /* APB0 really */
+#define CCM_APB2_DEFAULT		0x03000005	    /* APB1 really */
+
 #endif
 
 /* apb2 bit field */
