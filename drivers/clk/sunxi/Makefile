@@ -29,3 +29,4 @@ obj-$(CONFIG_CLK_SUN55I_A523) += clk_a523.o
 obj-$(CONFIG_CLK_SUN55I_A523_R) += clk_a523_r.o
 obj-$(CONFIG_CLK_SUN60I_A733) += clk_a733.o
 obj-$(CONFIG_CLK_SUN60I_A733_R) += clk_a733_r.o
+obj-$(CONFIG_CLK_SUN60I_A733_RTC) += clk_a733_rtc.o
