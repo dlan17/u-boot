@@ -332,6 +332,12 @@ config PHY_XILINX_ZYNQMP
 	  Enable this to support ZynqMP High Speed Gigabit Transceiver
 	  that is part of ZynqMP SoC.
 
+config AW_CADENCE_COMBOPHY
+	tristate "Allwinner Cadence ComboPHY driver"
+	depends on PHY
+	help
+	  Enable this to support Allwinner Cadence Comb PHY
+
 source "drivers/phy/rockchip/Kconfig"
 source "drivers/phy/cadence/Kconfig"
 source "drivers/phy/ti/Kconfig"
