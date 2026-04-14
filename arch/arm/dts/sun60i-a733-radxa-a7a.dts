@@ -128,9 +128,9 @@
 		regulators {
 			reg_dcdc1: dcdc1 {
 				regulator-always-on;
-				regulator-min-microvolt = <900000>;
-				regulator-max-microvolt = <1160000>;
-				regulator-name = "vdd-cpul";
+				regulator-min-microvolt = <1000000>;
+				regulator-max-microvolt = <3400000>;
+				regulator-name = "vdd-3v3";
 			};
 
 			reg_swout1: swout1 {
@@ -151,6 +151,20 @@
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-name = "vcc-mipi-dsi";
+			};
+
+			reg_bldo1: bldo1 {
+				regulator-always-on;
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-name = "vcc-pe";
+			};
+
+			reg_bldo2: bldo2 {
+				regulator-always-on;
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-name = "vcc-pd";
 			};
 
 			/* Supplies the SYSFB */
@@ -220,4 +234,18 @@
 		reg = <0>;
 		spi-max-frequency = <20000000>;
 	};
+};
+
+&serdes {
+	status = "okay";
+	combophy0: combo-phy0@6c01000 {
+		lane_invert = <0 0 0 0>;
+		lane_remap = <2 3 0 1>;
+	};
+};
+
+&pcie_rc {
+	status = "okay";
+	pcie1v8-supply = <&reg_bldo1>;
+	pcie3v3-supply = <&reg_dcdc1>;
 };

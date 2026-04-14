@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: (GPL-2.0-only OR MIT)
 // Copyright (C) 2023-2024 Arm Ltd.
 
+#include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-#include <dt-bindings/clock/sun6i-rtc.h>
+#include <dt-bindings/clock/sun60i-a733-rtc.h>
 #include <dt-bindings/clock/sun60i-a733-ccu.h>
 #include <dt-bindings/clock/sun60i-a733-r-ccu.h>
 #include <dt-bindings/reset/sun60i-a733-ccu.h>
 #include <dt-bindings/reset/sun60i-a733-r-ccu.h>
+
+#define PHY_TYPE_PCIE          2
 
 / {
 	interrupt-parent = <&gic>;
@@ -79,6 +82,27 @@
 		compatible = "fixed-clock";
 		clock-frequency = <24000000>;
 		clock-output-names = "osc24M";
+	};
+
+	clk_serdes_phy_cfgv: dummy0-clk {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <24000000>;
+		clock-output-names = "dummy0";
+	};
+
+	clk_dcxo_serdes0_gate: dummy1-clk {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <24000000>;
+		clock-output-names = "dummy1";
+	};
+
+	clk_dcxo_serdes1_gate: dummy2-clk {
+		#clock-cells = <0>;
+		compatible = "fixed-clock";
+		clock-frequency = <24000000>;
+		clock-output-names = "dummy2";
 	};
 
 	pmu {
@@ -159,6 +183,14 @@
 				bias-pull-up;
 			};
 
+			spi0_pins: spi0-pins {
+				pins = "PC2", "PC3" ,"PC4", "PC12";
+				allwinner,pinmux = <5>;
+				function = "spi0";
+				drive-strength = <30>;
+				bias-pull-up;
+			};
+
 			gmac0_pins: gmac0-pins {
 				pins = "PH0", "PH1", "PH2", "PH3", "PH4", "PH5",
 				       "PH6", "PH7", "PH8", "PH9", "PH10",
@@ -175,14 +207,6 @@
 				       "PJ11", "PJ12","PJ13", "PJ14", "PJ15";
 				allwinner,pinmux = <5>;
 				function = "gmac1";
-				drive-strength = <30>;
-				bias-pull-up;
-			};
-
-			spi0_pins: spi0-pins {
-				pins = "PC2", "PC3" ,"PC4", "PC12";
-				allwinner,pinmux = <5>;
-				function = "spi0";
 				drive-strength = <30>;
 				bias-pull-up;
 			};
@@ -600,6 +624,59 @@
 			clock-names = "bus", "hosc", "ahb";
 			#clock-cells = <1>;
 		};
+
+		serdes: serdes@6c00000 {
+			compatible = "allwinner,cadence-combophy";
+			reg = <0x06c00000 0x400>, /* serdes top register part-1 */
+			      <0x06c06000 0x2000>, /* serdes top register part-2 */
+			      <0x0709016c 0x4>; /* sys-rtc */
+			clocks = <&ccu CLK_SERDES_PHY>,
+				 <&rtc CLK_HOSC_SERDES0>,
+				 <&rtc CLK_HOSC_SERDES1>;
+			clock-names = "serdes-clk",
+				      "dcxo-serdes0-clk",
+				      "dcxo-serdes1-clk";
+			resets = <&ccu RST_BUS_SERDES>;
+			reset-names = "bus";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges;
+			status = "disabled";
+
+			combophy1: combo-phy1@6c02000 {
+				reg = <0x06c02000 0xa00>, /* combophy1 top register */
+				      <0x06ca0000 0x20000>; /* combophy1 phy register*/
+				#phy-cells = <1>;
+			};
+		};
+
+		pcie_rc: pcie@6000000 {
+			compatible = "allwinner,sunxi-pcie-v300-rc";
+			reg = <0x06000000 0x480000>;
+			#address-cells = <3>;
+			#size-cells = <2>;
+			bus-range = <0x0 0xff>;
+			reg-names = "dbi";
+			device_type = "pci";
+			ranges = <0x00000800 0x20000000 0x20000000 0x01000000
+				  0x81000000 0x21000000 0x21000000 0x01000000
+				  0x82000000 0x22000000 0x22000000 0x0e000000>;
+			num-lanes = <1>;
+			pwr-gpios = <&pio 4 11 GPIO_ACTIVE_HIGH>;
+			rst-gpios = <&pio 4 13 GPIO_ACTIVE_HIGH>;
+			wake-gpios = <&pio 4 12 GPIO_ACTIVE_HIGH>;
+
+			phys = <&combophy1 PHY_TYPE_PCIE>;
+			phy-names = "pcie-phy";
+			#interrupt-cells = <1>;
+			num-edma = <4>;
+			max-link-speed = <3>;
+			num-ib-windows = <16>;
+			num-ob-windows = <16>;
+			linux,pci-domain = <0>;
+			status = "disabled";
+		};
+
 
 	};
 };
