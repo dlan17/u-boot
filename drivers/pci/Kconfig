@@ -467,4 +467,13 @@ config PCIE_DW_IMX
 	  Say Y here if you want to enable DW PCIe controller support on
 	  iMX SoCs.
 
+config PCIE_SUNXI
+	bool "Allwinner PCIe controller support"
+	depends on ARCH_SUNXI
+	select REGMAP
+	select SYSCON
+	help
+	  Say Y here if you want to enable DW PCIe controller support on
+	  Allwinner SoCs.
+
 endif
