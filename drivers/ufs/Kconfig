@@ -88,4 +88,8 @@ config UFS_TI_J721E
 	  This selects the glue layer driver for Cadence controller
 	  present on TI's J721E devices.
 
+config UFS_SUNXI
+	bool "Allwinner UFS"
+	depends on UFS
+
 endmenu
