@@ -109,6 +109,10 @@
 	};
 };
 
+&ufs {
+	status = "okay";
+};
+
 &r_i2c0 {
 	status = "okay";
 

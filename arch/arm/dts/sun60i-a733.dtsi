@@ -553,6 +553,13 @@
 			};
 		};
 
+		ufs: ufs@4520000 {
+			compatible = "allwinner,sunxi-ufs";
+			reg = <0x4520000 0x10000>;
+			interrupts = <GIC_SPI 165 IRQ_TYPE_EDGE_RISING>;
+			status = "disabled";
+		};
+
 		nmi_intc: interrupt-controller@7010320 {
 			compatible = "allwinner,sun55i-a523-nmi";
 			reg = <0x07010320 0xc>;
